@@ -69,10 +69,18 @@ public class Main {
                         do {
                             System.out.println("\nEnter the ID of the role you want to add?");
                             roleId = input.nextLong();
-                            if (findRole(roleId, roles) != null) {
-                                auser.getRoles().add(findRole(roleId, roles));
-                            } else {
+                            input.nextLine();
+                            Role theRole = findRole(roleId, roles);
+                            if (theRole == null) {
                                 System.out.println("Role not Found");
+                            }
+                            if (auser.getRoles().contains(theRole)) {
+                                System.out.println("you can not have one role towice for one user");
+                            }
+                            if (theRole != null && !auser.getRoles().contains(theRole)) {
+                                auser.getRoles().add(theRole);
+                            } else {
+
                             }
                             System.out.println("\nAny other roles?(yes/no)");
                             anyOtherRoles = input.nextLine();
@@ -101,35 +109,42 @@ public class Main {
                 }
                 case "3": {
                     for (Role eachRole : roles) {
-                        System.out.printf("Role Name:%s\t\t\t\t\t\t\tRole Id:%s\n", eachRole.getRoleName(), eachRole.getRoleId());
+                        System.out.printf("Role Name: %s\t\t\t\t\t\t\tRole Id: %s\n", eachRole.getRoleName(), eachRole.getRoleId());
                     }
                     for (User eachUser : users) {
-                        System.out.printf("User Name:%s\t\t\t\t\t\t\tUser Id:%s\n", eachUser.getUserName(), eachUser.getUserId());
+                        System.out.printf("User Name: %s\t\t\t\t\t\t\tUser Id: %s\n", eachUser.getUserName(), eachUser.getUserId());
                     }
                     System.out.println("User ID:");
                     userId = input.nextLong();
-                    User theUser = findUser(userId, users);
                     input.nextLine();
-                    do {
-                        System.out.println("\nEnter the ID of the role you want to add?");
-                        roleId = input.nextLong();
-                        Role theRole = findRole(roleId, roles);
-                        if (theUser.getRoles().contains(theRole)) {
-                            System.out.println("The Role is Already in this User's Role List ");
-                        }
-                        if (theRole != null && !theUser.getRoles().contains(theRole)) {
-                            theUser.getRoles().add(theRole);
-                            if (theRole.getUsers().contains(theUser)) {
-                                System.out.println("The user is already on this Role's User List");
+                    User theUser = findUser(userId, users);
+
+                    if (theUser != null) {
+                        do {
+                            System.out.println("\nEnter the ID of the role you want to add?");
+                            roleId = input.nextLong();
+                            input.nextLine();
+                            Role theRole = findRole(roleId, roles);
+                            if (theUser.getRoles().contains(theRole)) {
+                                System.out.println("The Role is Already in this User's Role List ");
                             }
-                            if (!theRole.getUsers().contains(theUser)) {
-                                theRole.getUsers().add(theUser);
+                            if (theRole != null && !theUser.getRoles().contains(theRole)) {
+                                theUser.getRoles().add(theRole);
+                                if (theRole.getUsers().contains(theUser)) {
+                                    System.out.println("The user is already on this Role's User List");
+                                }
+                                if (!theRole.getUsers().contains(theUser)) {
+                                    theRole.getUsers().add(theUser);
+                                }
                             }
-                        } else
-                            System.out.println("Role not Found");
-                        System.out.println("\nAny other roles?(yes/no");
-                        anyOtherRoles = input.nextLine();
-                    } while (anyOtherRoles.equalsIgnoreCase("yes"));
+                            if (theRole == null) {
+                                System.out.println("Role not Found");
+                            }
+                            System.out.println("\nAny other roles?(yes/no)");
+                            anyOtherRoles = input.nextLine();
+                        } while (anyOtherRoles.equalsIgnoreCase("yes"));
+                    } else
+                        System.out.println("User Not found");
                     break;
                 }
                 case "4": {
@@ -139,19 +154,20 @@ public class Main {
                     System.out.println("User ID:");
                     userId = input.nextLong();
                     input.nextLine();
-                    User theUser=findUser(userId,users);
-                    System.out.println("Password");
-                    passWord = input.nextLine();
-                    if (validation(passWord,theUser,input)) {
-                        System.out.println("\n***Your Roles***");
-                        for (Role eachRole:theUser.getRoles()){
-                            System.out.printf("Role Name:%s\t\t\t\t\t\t\tRole Id:%s\n", eachRole.getRoleName(), eachRole.getRoleId());
-                        }
+                    User theUser = findUser(userId, users);
+                    if (theUser != null) {
+                        System.out.println("Password");
+                        passWord = input.nextLine();
+                        if (validation(passWord, theUser, input)) {
+                            System.out.println("\n***Your Roles***");
+                            for (Role eachRole : theUser.getRoles()) {
+                                System.out.printf("Role Name:%s\t\t\t\t\t\t\tRole Id:%s\n", eachRole.getRoleName(), eachRole.getRoleId());
+                            }
 
-                    }
-                    else
-                        System.out.println("You can't log in");
-
+                        } else
+                            System.out.println("You can't log in");
+                    } else
+                        System.out.println("User not found");
                     break;
                 }
                 case "5": {
@@ -200,17 +216,17 @@ public class Main {
         return foundUser;
     }
 
-    public static boolean validation(String passWord, User user,Scanner input) {
-        boolean validate=false;
+    public static boolean validation(String passWord, User user, Scanner input) {
+        boolean validate = false;
         do {
             if (passWord.equals(user.getPassWord())) {
                 System.out.println("Log In successful!");
-                validate=true;
+                validate = true;
             } else {
                 System.out.println("Password not correct\nPlease enter your password again");
                 passWord = input.nextLine();
             }
-        }while(validate==false);
+        } while (validate == false);
 
         return validate;
 
